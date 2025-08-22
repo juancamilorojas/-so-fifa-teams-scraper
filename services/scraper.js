@@ -32,13 +32,15 @@ const getPageContent = async (url) => {
             const response = await humanoid.get(url);
             
             if (response.statusCode === 403) {
+                lastError = new Error('HTTP 403');
                 console.log('Detectado bloqueo de acceso (403), esperando más tiempo...');
                 await asyncWait(5000); // Esperar 5 segundos antes de reintentar
                 attempts -= 1;
                 continue;
             }
-            
+
             if (response.statusCode !== 200) {
+                lastError = new Error(`HTTP ${response.statusCode}`);
                 console.log(`reintentando ... intento=${attempts}, statusCode=${response.statusCode}`);
                 await asyncWait(2000); // Esperar 2 segundos entre intentos
                 attempts -= 1;
@@ -51,6 +53,7 @@ const getPageContent = async (url) => {
             
             // Verificar que el contenido sea HTML válido
             if (!response.body.includes('<!DOCTYPE html>')) {
+                lastError = new Error('Contenido no válido');
                 console.log('Respuesta no válida, reintentando...');
                 await asyncWait(2000);
                 attempts -= 1;
@@ -73,7 +76,7 @@ const getPageContent = async (url) => {
         }
     }
     
-    throw new Error(`Error leyendo página=${url}: ${lastError?.message || 'Error desconocido'}`);
+    throw new Error(`Error leyendo página=${url}: ${lastError?.message || 'Error desconocido'}`, { cause: lastError });
 };
 
 module.exports = {
