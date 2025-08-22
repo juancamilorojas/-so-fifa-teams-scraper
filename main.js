@@ -14,6 +14,8 @@ const teamDataSpecificFile = './output/team-data-specific.csv';
 const scanType = process.argv[2];
 const specificTeamId = process.argv[3];
 
+const TEAM_URL_PATTERN = /\/team\/\d+\//;
+
 // Lista de equipos para pruebas
 const testTeams = [
     'https://sofifa.com/team/243/real-madrid/',
@@ -52,8 +54,12 @@ async function download(fileToRead, fileToWrite, includeVersionHistory = true) {
 
     let count = 0;
     console.time('Escaneo completo');
-    
+
     for (let url of teamUrlList) {
+        if (!TEAM_URL_PATTERN.test(url)) {
+            console.warn(`URL inválida omitida: ${url}`);
+            continue;
+        }
         try {
             console.log(`Procesando equipo (${++count}/${teamUrlList.length}): ${url}`);
             let rows = await getTeamDetailsCsvRow(url, includeVersionHistory);
