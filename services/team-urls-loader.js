@@ -8,6 +8,8 @@ const teamUrlsFullFile = './files/team-urls-full.csv';
 const teamUrlsTestFile = './files/team-urls-test.csv';
 const teamUrlsSpecificFile = './files/team-urls-specific.csv';
 
+const TEAM_URL_PATTERN = /\/team\/\d+\//;
+
 /**
  * Este método obtiene todas las URLs de páginas de equipos de sofifa.com
  * @returns {Promise<void>}
@@ -29,19 +31,23 @@ async function loadTeamUrlsFile(scanType = 'full') {
         const teams = [];
         $('a[href*="/team/"]').each((i, el) => {
             const href = $(el).attr('href');
-            if (href && href.match(/\/team\/\d+/)) {
-                const fullUrl = SOFIFA_BASE_URL + href;
+            if (!href) return;
+            const fullUrl = SOFIFA_BASE_URL + href;
+            if (TEAM_URL_PATTERN.test(fullUrl)) {
                 if (!teams.includes(fullUrl)) {
                     teams.push(fullUrl);
                 }
+            } else {
+                console.warn(`URL inválida encontrada y omitida: ${fullUrl}`);
             }
         });
-        
+
         if (teams.length > 0) {
-            const teamIds = teams.join('\n') + '\n';
+            const validTeams = teams.filter(url => TEAM_URL_PATTERN.test(url));
+            const teamIds = validTeams.join('\n') + '\n';
             fs.appendFileSync(teamUrlsFileToWrite, teamIds);
-            totalTeams += teams.length;
-            console.log(`Descargadas URLs de equipos: ${teams.length} (total=${totalTeams})`);
+            totalTeams += validTeams.length;
+            console.log(`Descargadas URLs de equipos: ${validTeams.length} (total=${totalTeams})`);
         }
         
         // Verificar si hay más páginas
