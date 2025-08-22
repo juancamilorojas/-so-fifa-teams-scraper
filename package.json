@@ -1,0 +1,22 @@
+{
+  "name": "so-fifa-teams-scraper",
+  "version": "1.0.0",
+  "description": "Web scraper para obtener datos de equipos de SoFIFA incluyendo su historial de versiones",
+  "main": "main.js",
+  "scripts": {
+    "full": "node main.js full",
+    "test": "node main.js test",
+    "specific": "node main.js specific",
+    "download-urls": "node main.js download-urls",
+    "download-urls-test": "node main.js download-urls-test",
+    "specific-team": "node main.js specific-team",
+    "test-specific-team": "echo \"https://sofifa.com/team/1/arsenal/\" > files/team-urls-test.csv && npm run test"
+  },
+  "private": true,
+  "dependencies": {
+    "axios": "^1.8.4",
+    "cheerio": "^0.22.0",
+    "date-format": "^4.0.14",
+    "humanoid-js": "^1.0.1"
+  }
+}

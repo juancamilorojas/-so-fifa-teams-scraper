@@ -1,0 +1,4 @@
+node_modules/
+output/
+files/*.csv 
+sofifa-web-scraper/
